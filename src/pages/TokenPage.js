@@ -31,7 +31,7 @@ import { PlusCircle, Bookmark, AlertCircle } from 'react-feather'
 import FormattedName from '../components/FormattedName'
 import { useListedTokens } from '../contexts/Application'
 import HoverText from '../components/HoverText'
-import { UNTRACKED_COPY, TOKEN_BLACKLIST, BLOCKED_WARNINGS } from '../constants'
+import { UNTRACKED_COPY, TOKEN_BLACKLIST, BLOCKED_WARNINGS, EXPLORER } from '../constants'
 import QuestionHelper from '../components/QuestionHelper'
 import Checkbox from '../components/Checkbox'
 import { shortenAddress } from '../utils'
@@ -179,9 +179,9 @@ function TokenPage({ address, history }) {
             <TYPE.light style={{ textAlign: 'center' }}>
               {BLOCKED_WARNINGS[address] ?? `This token is not supported.`}
             </TYPE.light>
-            <Link external={true} href={'https://etherscan.io/address/' + address}>{`More about ${shortenAddress(
-              address
-            )}`}</Link>
+            <Link external={true} href={`${EXPLORER}/address/${address}`}>
+              {`More about ${shortenAddress(address)}`}
+            </Link>
           </AutoColumn>
         </BlockedMessageWrapper>
       </BlockedWrapper>
@@ -207,7 +207,7 @@ function TokenPage({ address, history }) {
               style={{ width: 'fit-content' }}
               color={backgroundColor}
               external
-              href={'https://etherscan.io/address/' + address}
+              href={`${EXPLORER}/address/${address}`}
             >
               <Text style={{ marginLeft: '.15rem' }} fontSize={'14px'} fontWeight={400}>
                 ({address.slice(0, 8) + '...' + address.slice(36, 42)})
@@ -368,7 +368,6 @@ function TokenPage({ address, history }) {
               </AutoRow>
             </RowBetween>
             <Panel
-              rounded
               style={{
                 marginTop: '1.5rem',
                 padding: '1.125rem 0 ',
@@ -383,15 +382,12 @@ function TokenPage({ address, history }) {
             <RowBetween mt={40} mb={'1rem'}>
               <TYPE.main fontSize={'1.125rem'}>Transactions</TYPE.main> <div />
             </RowBetween>
-            <Panel rounded>
-              {transactions ? <TxnList color={backgroundColor} transactions={transactions} /> : <Loader />}
-            </Panel>
+            <Panel>{transactions ? <TxnList color={backgroundColor} transactions={transactions} /> : <Loader />}</Panel>
             <>
               <RowBetween style={{ marginTop: '3rem' }}>
                 <TYPE.main fontSize={'1.125rem'}>Token Information</TYPE.main>{' '}
               </RowBetween>
               <Panel
-                rounded
                 style={{
                   marginTop: '1.5rem',
                 }}
@@ -420,8 +416,8 @@ function TokenPage({ address, history }) {
                     </AutoRow>
                   </Column>
                   <ButtonLight color={backgroundColor}>
-                    <Link color={backgroundColor} external href={'https://etherscan.io/address/' + address}>
-                      View on Etherscan ↗
+                    <Link color={backgroundColor} external href={`${EXPLORER}/address/${address}`}>
+                      View on Core Explorer ↗
                     </Link>
                   </ButtonLight>
                 </TokenDetailsLayout>

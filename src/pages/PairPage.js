@@ -37,7 +37,7 @@ import { Bookmark, PlusCircle, AlertCircle } from 'react-feather'
 import FormattedName from '../components/FormattedName'
 import { useListedTokens } from '../contexts/Application'
 import HoverText from '../components/HoverText'
-import { UNTRACKED_COPY, PAIR_BLACKLIST, BLOCKED_WARNINGS } from '../constants'
+import { UNTRACKED_COPY, PAIR_BLACKLIST, BLOCKED_WARNINGS, EXPLORER } from '../constants'
 
 const DashboardWrapper = styled.div`
   width: 100%;
@@ -94,7 +94,7 @@ const TokenDetailsLayout = styled.div`
 const FixedPanel = styled(Panel)`
   width: fit-content;
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: 0;
 
   :hover {
     cursor: pointer;
@@ -203,9 +203,9 @@ function PairPage({ pairAddress, history }) {
             <TYPE.light style={{ textAlign: 'center' }}>
               {BLOCKED_WARNINGS[pairAddress] ?? `This pair is not supported.`}
             </TYPE.light>
-            <Link external={true} href={'https://etherscan.io/address/' + pairAddress}>{`More about ${shortenAddress(
-              pairAddress
-            )}`}</Link>
+            <Link external={true} href={`${EXPLORER}/address/${pairAddress}`}>
+              {`More about ${shortenAddress(pairAddress)}`}
+            </Link>
           </AutoColumn>
         </BlockedMessageWrapper>
       </BlockedWrapper>
@@ -445,7 +445,6 @@ function PairPage({ pairAddress, history }) {
                 <TYPE.main fontSize={'1.125rem'}>Pair Information</TYPE.main>{' '}
               </RowBetween>
               <Panel
-                rounded
                 style={{
                   marginTop: '1.5rem',
                 }}
@@ -500,8 +499,8 @@ function PairPage({ pairAddress, history }) {
                     </AutoRow>
                   </Column>
                   <ButtonLight color={backgroundColor}>
-                    <Link color={backgroundColor} external href={'https://etherscan.io/address/' + pairAddress}>
-                      View on Etherscan ↗
+                    <Link color={backgroundColor} external href={`${EXPLORER}/address/${pairAddress}`}>
+                      View on Core Explorer ↗
                     </Link>
                   </ButtonLight>
                 </TokenDetailsLayout>

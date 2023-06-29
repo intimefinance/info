@@ -3,11 +3,6 @@ import { client } from '../apollo/client'
 import dayjs from 'dayjs'
 import { getShareValueOverTime } from '.'
 
-export const priceOverrides = [
-  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
-  '0x6b175474e89094c44da98b954eedeac495271d0f', // DAI
-]
-
 interface ReturnMetrics {
   hodleReturn: number // difference in asset values t0 -> t1 with t0 deposit amounts
   netReturn: number // net return from t0 -> t1
@@ -28,27 +23,6 @@ interface Position {
   token1PriceUSD: number
 }
 
-const PRICE_DISCOVERY_START_TIMESTAMP = 1589747086
-
-function formatPricesForEarlyTimestamps(position): Position {
-  if (position.timestamp < PRICE_DISCOVERY_START_TIMESTAMP) {
-    if (priceOverrides.includes(position?.pair?.token0.id)) {
-      position.token0PriceUSD = 1
-    }
-    if (priceOverrides.includes(position?.pair?.token1.id)) {
-      position.token1PriceUSD = 1
-    }
-    // WETH price
-    if (position.pair?.token0.id === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2') {
-      position.token0PriceUSD = 203
-    }
-    if (position.pair?.token1.id === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2') {
-      position.token1PriceUSD = 203
-    }
-  }
-  return position
-}
-
 async function getPrincipalForUserPerPair(user: string, pairAddress: string) {
   let usd = 0
   let amount0 = 0
@@ -63,35 +37,13 @@ async function getPrincipalForUserPerPair(user: string, pairAddress: string) {
   })
   for (const index in results.data.mints) {
     const mint = results.data.mints[index]
-    const mintToken0 = mint.pair.token0.id
-    const mintToken1 = mint.pair.token1.id
-
-    // if trackign before prices were discovered (pre-launch days), hardcode stablecoins
-    if (priceOverrides.includes(mintToken0) && mint.timestamp < PRICE_DISCOVERY_START_TIMESTAMP) {
-      usd += parseFloat(mint.amount0) * 2
-    } else if (priceOverrides.includes(mintToken1) && mint.timestamp < PRICE_DISCOVERY_START_TIMESTAMP) {
-      usd += parseFloat(mint.amount1) * 2
-    } else {
-      usd += parseFloat(mint.amountUSD)
-    }
+    usd += parseFloat(mint.amountUSD)
     amount0 += parseFloat(mint.amount0)
     amount1 += parseFloat(mint.amount1)
   }
-
   for (const index in results.data.burns) {
     const burn = results.data.burns[index]
-    const burnToken0 = burn.pair.token0.id
-    const burnToken1 = burn.pair.token1.id
-
-    // if trackign before prices were discovered (pre-launch days), hardcode stablecoins
-    if (priceOverrides.includes(burnToken0) && burn.timestamp < PRICE_DISCOVERY_START_TIMESTAMP) {
-      usd += parseFloat(burn.amount0) * 2
-    } else if (priceOverrides.includes(burnToken1) && burn.timestamp < PRICE_DISCOVERY_START_TIMESTAMP) {
-      usd += parseFloat(burn.amount1) * 2
-    } else {
-      usd -= parseFloat(burn.amountUSD)
-    }
-
+    usd -= parseFloat(burn.amountUSD)
     amount0 -= parseFloat(burn.amount0)
     amount1 -= parseFloat(burn.amount1)
   }
@@ -105,9 +57,6 @@ async function getPrincipalForUserPerPair(user: string, pairAddress: string) {
  * @param positionT1 // '' at the end of the window
  */
 export function getMetricsForPositionWindow(positionT0: Position, positionT1: Position): ReturnMetrics {
-  positionT0 = formatPricesForEarlyTimestamps(positionT0)
-  positionT1 = formatPricesForEarlyTimestamps(positionT1)
-
   // calculate ownership at ends of window, for end of window we need original LP token balance / new total supply
   const t0Ownership = positionT0.liquidityTokenBalance / positionT0.liquidityTokenTotalSupply
   const t1Ownership = positionT0.liquidityTokenBalance / positionT1.liquidityTokenTotalSupply

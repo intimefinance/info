@@ -15,15 +15,16 @@ import { Flex } from 'rebass'
 
 import { X } from 'react-feather'
 
+// border-radius: 12px;
 const Wrapper = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
   width: 100%;
-  border-radius: 12px;
 `
 
+// border-radius: 12px;
 const Input = styled.input`
   position: relative;
   display: flex;
@@ -34,7 +35,6 @@ const Input = styled.input`
   border: none;
   outline: none;
   padding: 12px 16px;
-  border-radius: 12px;
   color: ${({ theme }) => theme.text1};
   background-color: ${({ theme }) => theme.bg1};
   font-size: 16px;

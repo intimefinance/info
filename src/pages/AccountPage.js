@@ -16,16 +16,16 @@ import { PageWrapper, ContentWrapper, StyledIcon } from '../components'
 import DoubleTokenLogo from '../components/DoubleLogo'
 import { Bookmark, Activity } from 'react-feather'
 import Link from '../components/Link'
-import { FEE_WARNING_TOKENS } from '../constants'
+import { FEE_WARNING_TOKENS, EXPLORER } from '../constants'
 import { BasicLink } from '../components/Link'
 import { useMedia } from 'react-use'
 import Search from '../components/Search'
 import { useSavedAccounts } from '../contexts/LocalStorage'
 
+// border-radius: 100px;
 const AccountWrapper = styled.div`
   background-color: rgba(255, 255, 255, 0.2);
   padding: 6px 16px;
-  border-radius: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -37,13 +37,15 @@ const DashboardWrapper = styled.div`
   width: 100%;
 `
 
+// border-radius: 12px;
 const DropdownWrapper = styled.div`
   position: relative;
   margin-bottom: 1rem;
   border: 1px solid #edeef2;
-  border-radius: 12px;
 `
 
+// border-bottom-right-radius: 10px;
+// border-bottom-left-radius: 10px;
 const Flyout = styled.div`
   position: absolute;
   top: 38px;
@@ -51,8 +53,6 @@ const Flyout = styled.div`
   width: 100%;
   background-color: ${({ theme }) => theme.bg1};
   z-index: 999;
-  border-bottom-right-radius: 10px;
-  border-bottom-left-radius: 10px;
   padding-top: 4px;
   border: 1px solid #edeef2;
   border-top: none;
@@ -78,12 +78,12 @@ const PanelWrapper = styled.div`
   align-items: start;
 `
 
+// border-radius: 10px;
 const Warning = styled.div`
   background-color: ${({ theme }) => theme.bg2};
   color: ${({ theme }) => theme.text1};
   padding: 1rem;
   font-weight: 600;
-  border-radius: 10px;
   margin-bottom: 1rem;
   width: calc(100% - 2rem);
 `
@@ -166,7 +166,7 @@ function AccountPage({ account }) {
         <RowBetween>
           <TYPE.body>
             <BasicLink to="/accounts">{'Accounts '}</BasicLink>→{' '}
-            <Link lineHeight={'145.23%'} href={'https://etherscan.io/address/' + account} target="_blank">
+            <Link lineHeight={'145.23%'} href={`${EXPLORER}/address/${account}`} target="_blank">
               {' '}
               {account?.slice(0, 42)}{' '}
             </Link>
@@ -177,8 +177,8 @@ function AccountPage({ account }) {
           <RowBetween>
             <span>
               <TYPE.header fontSize={24}>{account?.slice(0, 6) + '...' + account?.slice(38, 42)}</TYPE.header>
-              <Link lineHeight={'145.23%'} href={'https://etherscan.io/address/' + account} target="_blank">
-                <TYPE.main fontSize={14}>View on Etherscan</TYPE.main>
+              <Link lineHeight={'145.23%'} href={`${EXPLORER}/address/${account}`} target="_blank">
+                <TYPE.main fontSize={14}>View on Core Explorer</TYPE.main>
               </Link>
             </span>
             <AccountWrapper>
@@ -326,7 +326,7 @@ function AccountPage({ account }) {
               <AutoColumn gap="8px" justify="flex-start">
                 <TYPE.main>No Staked Liquidity.</TYPE.main>
                 <AutoRow gap="8px" justify="flex-start">
-                  <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px' }}>Learn More</ButtonLight>{' '}
+                  <ButtonLight style={{ padding: '4px 6px' }}>Learn More</ButtonLight>{' '}
                 </AutoRow>{' '}
               </AutoColumn>
             )}

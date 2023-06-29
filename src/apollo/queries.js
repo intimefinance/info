@@ -1,9 +1,9 @@
 import gql from 'graphql-tag'
-import { FACTORY_ADDRESS, BUNDLE_ID } from '../constants'
+import { FACTORY_ADDRESS, BUNDLE_ID, V2_SUBGRAPH_START_BLOCK } from '../constants'
 
 export const SUBGRAPH_HEALTH = gql`
   query health {
-    indexingStatusForCurrentVersion(subgraphName: "uniswap/uniswap-v2-dev") {
+    indexingStatusForCurrentVersion(subgraphName: "uni8/v2") {
       synced
       health
       chains {
@@ -14,34 +14,6 @@ export const SUBGRAPH_HEALTH = gql`
           number
         }
       }
-    }
-  }
-`
-
-export const V1_DATA_QUERY = gql`
-  query uniswap($date: Int!, $date2: Int!) {
-    current: uniswap(id: "1") {
-      totalVolumeUSD
-      totalLiquidityUSD
-      txCount
-    }
-    oneDay: uniswapHistoricalDatas(where: { timestamp_lt: $date }, first: 1, orderBy: timestamp, orderDirection: desc) {
-      totalVolumeUSD
-      totalLiquidityUSD
-      txCount
-    }
-    twoDay: uniswapHistoricalDatas(
-      where: { timestamp_lt: $date2 }
-      first: 1
-      orderBy: timestamp
-      orderDirection: desc
-    ) {
-      totalVolumeUSD
-      totalLiquidityUSD
-      txCount
-    }
-    exchanges(first: 200, orderBy: ethBalance, orderDirection: desc) {
-      ethBalance
     }
   }
 `
@@ -78,7 +50,9 @@ export const POSITIONS_BY_BLOCK = (account, blocks) => {
   let queryString = 'query blocks {'
   queryString += blocks.map(
     (block) => `
-      t${block.timestamp}:liquidityPositions(where: {user: "${account}"}, block: { number: ${block.number} }) { 
+      t${block.timestamp}:liquidityPositions(where: {user: "${account}"}, block: { number: ${
+      block.number < V2_SUBGRAPH_START_BLOCK ? 10176496 : block.number
+    } }) { 
         liquidityTokenBalance
         pair  {
           id
@@ -96,7 +70,9 @@ export const PRICES_BY_BLOCK = (tokenAddress, blocks) => {
   let queryString = 'query blocks {'
   queryString += blocks.map(
     (block) => `
-      t${block.timestamp}:token(id:"${tokenAddress}", block: { number: ${block.number} }) { 
+      t${block.timestamp}:token(id:"${tokenAddress}", block: { number: ${
+      block.number < V2_SUBGRAPH_START_BLOCK ? 10176496 : block.number
+    } }) { 
         derivedETH
       }
     `
@@ -104,7 +80,9 @@ export const PRICES_BY_BLOCK = (tokenAddress, blocks) => {
   queryString += ','
   queryString += blocks.map(
     (block) => `
-      b${block.timestamp}: bundle(id:"1", block: { number: ${block.number} }) { 
+      b${block.timestamp}: bundle(id:"1", block: { number: ${
+      block.number < V2_SUBGRAPH_START_BLOCK ? 10176496 : block.number
+    } }) { 
         ethPrice
       }
     `
@@ -132,7 +110,9 @@ export const HOURLY_PAIR_RATES = (pairAddress, blocks) => {
   let queryString = 'query blocks {'
   queryString += blocks.map(
     (block) => `
-      t${block.timestamp}: pair(id:"${pairAddress}", block: { number: ${block.number} }) { 
+      t${block.timestamp}: pair(id:"${pairAddress}", block: { number: ${
+      block.number < V2_SUBGRAPH_START_BLOCK ? 10176496 : block.number
+    } }) { 
         token0Price
         token1Price
       }
@@ -147,7 +127,9 @@ export const SHARE_VALUE = (pairAddress, blocks) => {
   let queryString = 'query blocks {'
   queryString += blocks.map(
     (block) => `
-      t${block.timestamp}:pair(id:"${pairAddress}", block: { number: ${block.number} }) { 
+      t${block.timestamp}:pair(id:"${pairAddress}", block: { number: ${
+      block.number < V2_SUBGRAPH_START_BLOCK ? 10176496 : block.number
+    } }) { 
         reserve0
         reserve1
         reserveUSD
@@ -164,7 +146,9 @@ export const SHARE_VALUE = (pairAddress, blocks) => {
   queryString += ','
   queryString += blocks.map(
     (block) => `
-      b${block.timestamp}: bundle(id:"1", block: { number: ${block.number} }) { 
+      b${block.timestamp}: bundle(id:"1", block: { number: ${
+      block.number < V2_SUBGRAPH_START_BLOCK ? 10176496 : block.number
+    } }) { 
         ethPrice
       }
     `
@@ -178,7 +162,7 @@ export const ETH_PRICE = (block) => {
   const queryString = block
     ? `
     query bundles {
-      bundles(where: { id: ${BUNDLE_ID} } block: {number: ${block}}) {
+      bundles(where: { id: ${BUNDLE_ID} } block: {number: ${block < V2_SUBGRAPH_START_BLOCK ? 10176496 : block}}) {
         id
         ethPrice
       }
@@ -197,7 +181,7 @@ export const ETH_PRICE = (block) => {
 export const USER = (block, account) => {
   const queryString = `
     query users {
-      user(id: "${account}", block: {number: ${block}}) {
+      user(id: "${account}", block: {number: ${block < V2_SUBGRAPH_START_BLOCK ? 10176496 : block}}) {
         liquidityPositions
       }
     }
@@ -436,7 +420,7 @@ export const GLOBAL_CHART = gql`
 export const GLOBAL_DATA = (block) => {
   const queryString = ` query uniswapFactories {
       uniswapFactories(
-       ${block ? `block: { number: ${block}}` : ``} 
+       ${block ? `block: { number: ${block < V2_SUBGRAPH_START_BLOCK ? 10176496 : block}}` : ``} 
        where: { id: "${FACTORY_ADDRESS}" }) {
         id
         totalVolumeUSD
@@ -662,7 +646,9 @@ export const PAIR_DATA = (pairAddress, block) => {
   const queryString = `
     ${PairFields}
     query pairs {
-      pairs(${block ? `block: {number: ${block}}` : ``} where: { id: "${pairAddress}"} ) {
+      pairs(${
+        block ? `block: {number: ${block < V2_SUBGRAPH_START_BLOCK ? 10176496 : block}}` : ``
+      } where: { id: "${pairAddress}"} ) {
         ...PairFields
       }
     }`
@@ -710,7 +696,9 @@ export const PAIRS_HISTORICAL_BULK = (block, pairs) => {
   pairsString += ']'
   let queryString = `
   query pairs {
-    pairs(first: 200, where: {id_in: ${pairsString}}, block: {number: ${block}}, orderBy: trackedReserveETH, orderDirection: desc) {
+    pairs(first: 200, where: {id_in: ${pairsString}}, block: {number: ${
+    block < V2_SUBGRAPH_START_BLOCK ? 10176496 : block
+  }}, orderBy: trackedReserveETH, orderDirection: desc) {
       id
       reserveUSD
       trackedReserveETH
@@ -778,7 +766,9 @@ export const TOKENS_HISTORICAL_BULK = (tokens, block) => {
   tokenString += ']'
   let queryString = `
   query tokens {
-    tokens(first: 50, where: {id_in: ${tokenString}}, ${block ? 'block: {number: ' + block + '}' : ''}  ) {
+    tokens(first: 50, where: {id_in: ${tokenString}}, ${
+    block ? 'block: {number: ' + (block < V2_SUBGRAPH_START_BLOCK ? 10176496 : block) + '}' : ''
+  }  ) {
       id
       name
       symbol
@@ -807,7 +797,9 @@ export const TOKENS_DYNAMIC = (block) => {
   const queryString = `
     ${TokenFields}
     query tokens {
-      tokens(block: {number: ${block}} first: 200, orderBy: tradeVolumeUSD, orderDirection: desc) {
+      tokens(block: {number: ${
+        block < V2_SUBGRAPH_START_BLOCK ? 10176496 : block
+      }} first: 200, orderBy: tradeVolumeUSD, orderDirection: desc) {
         ...TokenFields
       }
     }
@@ -819,7 +811,9 @@ export const TOKEN_DATA = (tokenAddress, block) => {
   const queryString = `
     ${TokenFields}
     query tokens {
-      tokens(${block ? `block : {number: ${block}}` : ``} where: {id:"${tokenAddress}"}) {
+      tokens(${
+        block ? `block : {number: ${block < V2_SUBGRAPH_START_BLOCK ? 10176496 : block}}` : ``
+      } where: {id:"${tokenAddress}"}) {
         ...TokenFields
       }
       pairs0: pairs(where: {token0: "${tokenAddress}"}, first: 50, orderBy: reserveUSD, orderDirection: desc){

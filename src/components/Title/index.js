@@ -5,8 +5,7 @@ import styled from 'styled-components'
 import { Flex } from 'rebass'
 import Link from '../Link'
 import { RowFixed } from '../Row'
-import Logo from '../../assets/logo_white.svg'
-import Wordmark from '../../assets/wordmark_white.svg'
+import Logo from '../../assets/intime-logo.png'
 
 import { BasicLink } from '../Link'
 import { useMedia } from 'react-use'
@@ -39,20 +38,25 @@ const Option = styled.div`
   }
 `
 
+const V2Tag = styled.div`
+  background: #eb6c22;
+  margin-left: 4px;
+  font-weight: bold;
+  padding: 2px 4px;
+`
+
 export default function Title() {
   const history = useHistory()
   const below1080 = useMedia('(max-width: 1080px)')
 
   return (
-    <TitleWrapper onClick={() => history.push('/')}>
-      <Flex alignItems="center" style={{ justifyContent: 'space-between' }}>
+    <TitleWrapper onClick={() => history.push('/')} style={{ marginTop: `${below1080 ? '0px' : '1rem'}` }}>
+      <Flex alignItems="center" justifyContent="center">
         <RowFixed>
-          <UniIcon id="link" onClick={() => history.push('/')}>
-            <img width={'24px'} src={Logo} alt="logo" />
+          <UniIcon id="link" height={below1080 ? '25px' : '32px'} onClick={() => history.push('/')}>
+            <img width={below1080 ? '64px' : '80px'} src={Logo} alt="logo" />
           </UniIcon>
-          {!below1080 && (
-            <img width={'84px'} style={{ marginLeft: '8px', marginTop: '0px' }} src={Wordmark} alt="logo" />
-          )}
+          {!below1080 && <V2Tag>V2</V2Tag>}
         </RowFixed>
         {below1080 && (
           <RowFixed style={{ alignItems: 'flex-end' }}>

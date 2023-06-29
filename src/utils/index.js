@@ -8,7 +8,7 @@ import { GET_BLOCK, GET_BLOCKS, SHARE_VALUE } from '../apollo/queries'
 import { Text } from 'rebass'
 import _Decimal from 'decimal.js-light'
 import toFormat from 'toformat'
-import { timeframeOptions } from '../constants'
+import { timeframeOptions, EXPLORER, SWAP_APP_LINK, WRAPPED_CORE } from '../constants'
 import Numeral from 'numeral'
 
 // format libraries
@@ -40,16 +40,16 @@ export function getTimeframe(timeWindow) {
 export function getPoolLink(token0Address, token1Address = null, remove = false) {
   if (!token1Address) {
     return (
-      `https://app.uniswap.org/#/` +
+      `${SWAP_APP_LINK}/#/` +
       (remove ? `remove` : `add`) +
-      `/v2/${token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : token0Address}/${'ETH'}`
+      `/v2/${token0Address === WRAPPED_CORE ? 'ETH' : token0Address}/${'ETH'}`
     )
   } else {
     return (
-      `https://app.uniswap.org/#/` +
+      `${SWAP_APP_LINK}/#/` +
       (remove ? `remove` : `add`) +
-      `/v2/${token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : token0Address}/${
-        token1Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : token1Address
+      `/v2/${token0Address === WRAPPED_CORE ? 'ETH' : token0Address}/${
+        token1Address === WRAPPED_CORE ? 'ETH' : token1Address
       }`
     )
   }
@@ -57,20 +57,20 @@ export function getPoolLink(token0Address, token1Address = null, remove = false)
 
 export function getSwapLink(token0Address, token1Address = null) {
   if (!token1Address) {
-    return `https://app.uniswap.org/#/swap?inputCurrency=${token0Address}`
+    return `${SWAP_APP_LINK}/#/swap?inputCurrency=${token0Address}`
   } else {
-    return `https://app.uniswap.org/#/swap?inputCurrency=${
-      token0Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : token0Address
-    }&outputCurrency=${token1Address === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ? 'ETH' : token1Address}`
+    return `${SWAP_APP_LINK}/#/swap?inputCurrency=${
+      token0Address === WRAPPED_CORE ? 'ETH' : token0Address
+    }&outputCurrency=${token1Address === WRAPPED_CORE ? 'ETH' : token1Address}`
   }
 }
 
 export function getMiningPoolLink(token0Address) {
-  return `https://app.uniswap.org/#/uni/ETH/${token0Address}`
+  return `${SWAP_APP_LINK}/#/uni/ETH/${token0Address}`
 }
 
 export function getUniswapAppLink(linkVariable) {
-  let baseUniswapUrl = 'https://app.uniswap.org/#/uni'
+  let baseUniswapUrl = `${SWAP_APP_LINK}/#/uni`
   if (!linkVariable) {
     return baseUniswapUrl
   }
@@ -303,10 +303,10 @@ export const setThemeColor = (theme) => document.documentElement.style.setProper
 export const Big = (number) => new BigNumber(number)
 
 export const urls = {
-  showTransaction: (tx) => `https://etherscan.io/tx/${tx}/`,
-  showAddress: (address) => `https://www.etherscan.io/address/${address}/`,
-  showToken: (address) => `https://www.etherscan.io/token/${address}/`,
-  showBlock: (block) => `https://etherscan.io/block/${block}/`,
+  showTransaction: (tx) => `${EXPLORER}/tx/${tx}`,
+  showAddress: (address) => `${EXPLORER}/address/${address}`,
+  showToken: (address) => `${EXPLORER}/token/${address}`,
+  showBlock: (block) => `${EXPLORER}/block/${block}`,
 }
 
 export const formatTime = (unix) => {

@@ -7,6 +7,7 @@ import { formattedNum, localNumber } from '../../utils'
 
 import UniPrice from '../UniPrice'
 import { TYPE } from '../../Theme'
+import { NATIVE_CURRENCY_SYMBOL } from '../../constants'
 
 const Header = styled.div`
   width: 100%;
@@ -47,7 +48,7 @@ export default function GlobalStats() {
               }}
               style={{ position: 'relative' }}
             >
-              ETH Price: <Medium>{formattedEthPrice}</Medium>
+              {NATIVE_CURRENCY_SYMBOL} Price: <Medium>{formattedEthPrice}</Medium>
               {showPriceCard && <UniPrice />}
             </TYPE.main>
           )}
@@ -64,7 +65,7 @@ export default function GlobalStats() {
           )}
           {!below1295 && (
             <TYPE.main mr={'1rem'}>
-              Fees (24H): <Medium>{oneDayFees}</Medium>&nbsp;
+              Fees (24H): <Medium>{oneDayFees || 0}</Medium>&nbsp;
             </TYPE.main>
           )}
         </RowFixed>
