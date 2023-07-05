@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { HashRouter } from 'react-router-dom'
 // import ReactGA from 'react-ga'
 // import { isMobile } from 'react-device-detect'
 import ThemeProvider, { GlobalStyle } from './Theme'
@@ -65,7 +66,9 @@ ReactDOM.render(
     <ThemeProvider>
       <>
         <GlobalStyle />
-        <App />
+        <HashRouter>
+          <App />
+        </HashRouter>
       </>
     </ThemeProvider>
   </ContextProviders>,
